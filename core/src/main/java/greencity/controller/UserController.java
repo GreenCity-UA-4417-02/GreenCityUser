@@ -605,7 +605,7 @@ public class UserController {
     })
     @GetMapping("/lang")
     public ResponseEntity<String> getUserLang(@ApiIgnore @CurrentUser UserVO userVO) {
-        return ResponseEntity.status(HttpStatus.OK).body(userVO.getLanguageVO().getCode());
+        return ResponseEntity.status(HttpStatus.OK).body(userVO.getLanguage().getCode());
     }
 
     /**

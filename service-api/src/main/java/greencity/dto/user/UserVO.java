@@ -59,5 +59,5 @@ public class UserVO {
 
     private LocalDateTime lastActivityTime;
 
-    private LanguageVO languageVO;
+    private LanguageVO language;
 }
