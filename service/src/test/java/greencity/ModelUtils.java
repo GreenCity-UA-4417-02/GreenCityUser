@@ -180,7 +180,7 @@ public class ModelUtils {
                     .build())
                 .build())
             .lastActivityTime(LocalDateTime.of(2020, 12, 11, 13, 30))
-            .languageVO(LanguageVO.builder()
+            .language(LanguageVO.builder()
                 .id(1L)
                 .code("ua")
                 .build())
