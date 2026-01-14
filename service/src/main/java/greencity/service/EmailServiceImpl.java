@@ -76,7 +76,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendChangePlaceStatusEmail(String authorName, String placeName,
         String placeStatus, String authorEmail) {
-        if (userRepo.findByEmail(authorEmail).isEmpty()){
+        if (userRepo.findByEmail(authorEmail).isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + authorEmail);
         }
         log.info(LogMessage.IN_SEND_CHANGE_PLACE_STATUS_EMAIL, placeName);
