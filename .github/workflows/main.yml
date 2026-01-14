@@ -40,7 +40,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_USER }}
         run: |
-          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=greencity-ua-4417-02_GreenCityUser -Dsonar.organization=greencity-ua-4417-02 -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources='src/main/java/greencity' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports -Dsonar.branch.name=feature/connect-sonarcloud
+          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=greencity-ua-4417-02_GreenCityUser -Dsonar.organization=greencity-ua-4417-02 -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources='src/main/java/greencity' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports -Dsonar.branch.name=dev
 
       - name: Test Reporter
         uses: dorny/test-reporter@v1.5.0
