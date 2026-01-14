@@ -29,8 +29,7 @@ import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 class EmailServiceImplTest {
@@ -58,12 +57,36 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendChangePlaceStatusEmailTest() {
-        String authorFirstName = "test author first name";
-        String placeName = "test place name";
-        String placeStatus = "test place status";
-        String authorEmail = "test author email";
+    void shouldThrowNotFoundException_whenEmailDoesNotExist() {
+        String authorFirstName = "name";
+        String placeName = "place";
+        String placeStatus = "status";
+        String authorEmail = "nonExistEmail@gmail.com";
+
+        when(userRepo.findByEmail(authorEmail)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
+        verify(userRepo).findByEmail(authorEmail);
+        verifyNoInteractions(javaMailSender);
+    }
+
+    @Test
+    void shouldSendEmail_whenEmailExist() {
+        String authorFirstName = "name";
+        String placeName = "place";
+        String placeStatus = "status";
+        String authorEmail = "existEmail@gmail.com";
+        User ExistentUser = User.builder()
+                .id(1L)
+                .name("name")
+                .email("existEmail@gmail.com")
+                .build();
+
+        when(userRepo.findByEmail(authorEmail)).thenReturn(Optional.of(ExistentUser));
         service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail);
+
+        verify(userRepo).findByEmail(authorEmail);
         verify(javaMailSender).createMimeMessage();
     }
 
