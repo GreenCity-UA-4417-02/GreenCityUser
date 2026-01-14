@@ -85,12 +85,12 @@ class EmailServiceImplTest {
     void sendCreatedNewsForAuthorTest() {
         String email = "non-existent@gmail.com";
         PlaceAuthorDto author = PlaceAuthorDto.builder()
-                .email(email)
-                .build();
+            .email(email)
+            .build();
 
         EcoNewsForSendEmailDto dto = EcoNewsForSendEmailDto.builder()
-                .author(author)
-                .build();
+            .author(author)
+            .build();
 
         when(userRepo.existsUserByEmail(email)).thenReturn(false);
 
