@@ -1,16 +1,18 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI/CD GreenCityUser
-# Controls when the action will run. 
 
 concurrency: Testing
 
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master, dev ]
   pull_request:
     branches: [ master, dev ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
 
 env:
   repository: user
@@ -18,36 +20,28 @@ env:
   onbootJarName: app.jar
   dockerRepoName: skyere/greencityuser
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
     runs-on: ubuntu-latest
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - uses: actions/checkout@v2
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+    steps:
+      - uses: actions/checkout@v4
         with:
-          java-version: 11
-      
-#       - name: Set up Go
-#         uses: actions/setup-go@v3
-#         with:
-#           go-version: 1.18
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
       - name: Run a multi-line script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_USER }}
         run: |
-          git fetch --unshallow
-          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ita-social-projects-green-city-user -Dsonar.organization=ita-social-projects -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources='src/main/java/greencity' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports
-        # Checks-out your greencity.repository under $GITHUB_WORKSPACE, so your job can access it
-      
+          mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report sonar:sonar -Dsonar.projectKey=greencity-ua-4417-02_GreenCityUser -Dsonar.organization=greencity-ua-4417-02 -Dsonar.host.url=https://sonarcloud.io -Dsonar.sources='src/main/java/greencity' -Dsonar.binaries=target/classes -Dsonar.dynamicAnalysis=reuseReports -Dsonar.branch.name=dev
+
       - name: Test Reporter
         uses: dorny/test-reporter@v1.5.0
         if: success() || failure()
@@ -55,7 +49,7 @@ jobs:
           name: Tests Report
           path: ${{ env.userRepoName }}/target/surefire-reports/*.xml
           reporter: java-junit
-      
+
       - name: Rename user jar to app
         run: mv $userRepoName/target/*.jar $userRepoName/target/$onbootJarName
 
@@ -75,23 +69,6 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ env.dockerRepoName }}:test-${{ env.GITHUB_SHA_SHORT }}
-      
-#       - name: Kubernetes Set Context
-#         uses: Azure/k8s-set-context@v3.0
-#         with:
-#           kubeconfig: ${{ secrets.KUBE_CONFIG }}
-      
-#       - name: Set up Postgres
-#         run: kubectl scale deploy postgres --replicas=1 -n test
-      
-#       - name: Kubernetes tests
-#         run: |
-#           cd chart-test
-#           go test -v ./...
-      
-#       - name: Post Set up Postgres
-#         if: success() || failure()
-#         run: kubectl scale deploy postgres --replicas=0 -n test
 
       - name: Deploy 🚀
         if: ${{ github.event_name == 'push' }}
@@ -100,4 +77,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: .
-          CLEAN: true 
+          CLEAN: true
