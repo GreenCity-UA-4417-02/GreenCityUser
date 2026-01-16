@@ -77,8 +77,8 @@ public class EmailController {
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
-    public ResponseEntity<Object> sendHabitNotification(@RequestBody
-                                                        @Valid SendHabitNotification sendHabitNotification) {
+    public ResponseEntity<Object> sendHabitNotification(
+            @Valid @RequestBody SendHabitNotification sendHabitNotification) {
         emailService.sendHabitNotification(sendHabitNotification.getName(), sendHabitNotification.getEmail());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
