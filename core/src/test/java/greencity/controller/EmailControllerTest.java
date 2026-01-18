@@ -42,21 +42,21 @@ class EmailControllerTest {
     @BeforeEach
     void setUp() {
         this.mockMvc = MockMvcBuilders
-                .standaloneSetup(emailController)
-                .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
-                .build();
+            .standaloneSetup(emailController)
+            .setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
+            .build();
     }
 
     @Test
     void addEcoNews() throws Exception {
         String content =
-                "{\"unsubscribeToken\":\"string\"," +
-                        "\"creationDate\":\"2021-02-05T15:10:22.434Z\"," +
-                        "\"imagePath\":\"string\"," +
-                        "\"source\":\"string\"," +
-                        "\"author\":{\"id\":0,\"name\":\"string\",\"email\":\"test.email@gmail.com\" }," +
-                        "\"title\":\"string\"," +
-                        "\"text\":\"string\"}";
+            "{\"unsubscribeToken\":\"string\"," +
+                "\"creationDate\":\"2021-02-05T15:10:22.434Z\"," +
+                "\"imagePath\":\"string\"," +
+                "\"source\":\"string\"," +
+                "\"author\":{\"id\":0,\"name\":\"string\",\"email\":\"test.email@gmail.com\" }," +
+                "\"title\":\"string\"," +
+                "\"text\":\"string\"}";
 
         mockPerform(content, "/addEcoNews", status().isOk());
 
@@ -71,58 +71,58 @@ class EmailControllerTest {
     @Test
     void sendReport() throws Exception {
         String content = "{" +
-                "\"categoriesDtoWithPlacesDtoMap\":" +
-                "{\"additionalProp1\":" +
-                "[{\"category\":{\"name\":\"string\",\"parentCategoryId\":0}," +
-                "\"name\":\"string\"}]," +
-                "\"additionalProp2\":" +
-                "[{\"category\":{\"name\":\"string\",\"parentCategoryId\":0}," +
-                "\"name\":\"string\"}]," +
-                "\"additionalProp3\":[{\"category\":{\"name\":\"string\",\"parentCategoryId\":0}," +
-                "\"name\":\"string\"}]}," +
-                "\"emailNotification\":\"string\"," +
-                "\"subscribers\":[{\"email\":\"string\",\"id\":0,\"name\":\"string\"}]}";
+            "\"categoriesDtoWithPlacesDtoMap\":" +
+            "{\"additionalProp1\":" +
+            "[{\"category\":{\"name\":\"string\",\"parentCategoryId\":0}," +
+            "\"name\":\"string\"}]," +
+            "\"additionalProp2\":" +
+            "[{\"category\":{\"name\":\"string\",\"parentCategoryId\":0}," +
+            "\"name\":\"string\"}]," +
+            "\"additionalProp3\":[{\"category\":{\"name\":\"string\",\"parentCategoryId\":0}," +
+            "\"name\":\"string\"}]}," +
+            "\"emailNotification\":\"string\"," +
+            "\"subscribers\":[{\"email\":\"string\",\"id\":0,\"name\":\"string\"}]}";
 
         mockPerform(content, "/sendReport", status().isOk());
 
         SendReportEmailMessage message =
-                new ObjectMapper().readValue(content, SendReportEmailMessage.class);
+            new ObjectMapper().readValue(content, SendReportEmailMessage.class);
 
         verify(emailService).sendAddedNewPlacesReportEmail(
-                message.getSubscribers(), message.getCategoriesDtoWithPlacesDtoMap(),
-                message.getEmailNotification());
+            message.getSubscribers(), message.getCategoriesDtoWithPlacesDtoMap(),
+            message.getEmailNotification());
     }
 
     @Test
     void changePlaceStatus() throws Exception {
         String content = "{" +
-                "\"authorEmail\":\"string\"," +
-                "\"authorFirstName\":\"string\"," +
-                "\"placeName\":\"string\"," +
-                "\"placeStatus\":\"string\"" +
-                "}";
+            "\"authorEmail\":\"string\"," +
+            "\"authorFirstName\":\"string\"," +
+            "\"placeName\":\"string\"," +
+            "\"placeStatus\":\"string\"" +
+            "}";
 
         mockPerform(content, "/changePlaceStatus", status().isOk());
 
         SendChangePlaceStatusEmailMessage message =
-                new ObjectMapper().readValue(content, SendChangePlaceStatusEmailMessage.class);
+            new ObjectMapper().readValue(content, SendChangePlaceStatusEmailMessage.class);
 
         verify(emailService).sendChangePlaceStatusEmail(
-                message.getAuthorFirstName(), message.getPlaceName(),
-                message.getPlaceStatus(), message.getAuthorEmail());
+            message.getAuthorFirstName(), message.getPlaceName(),
+            message.getPlaceStatus(), message.getAuthorEmail());
     }
 
     @Test
     void sendHabitNotification_validEmail_isOk() throws Exception {
         String content = "{" +
-                "\"email\":\"test@gmail.com\"," +
-                "\"name\":\"string\"" +
-                "}";
+            "\"email\":\"test@gmail.com\"," +
+            "\"name\":\"string\"" +
+            "}";
 
         mockPerform(content, "/sendHabitNotification", status().isOk());
 
         SendHabitNotification notification =
-                new ObjectMapper().readValue(content, SendHabitNotification.class);
+            new ObjectMapper().readValue(content, SendHabitNotification.class);
 
         verify(emailService).sendHabitNotification(notification.getName(), notification.getEmail());
     }
@@ -130,9 +130,9 @@ class EmailControllerTest {
     @Test
     void sendHabitNotification_invalidEmail_isNotOk() throws Exception {
         String content = "{" +
-                "\"email\":\"1111gmail.com\"," +
-                "\"name\":\"string\"" +
-                "}";
+            "\"email\":\"1111gmail.com\"," +
+            "\"name\":\"string\"" +
+            "}";
 
         mockPerform(content, "/sendHabitNotification", status().isBadRequest());
 
@@ -141,18 +141,18 @@ class EmailControllerTest {
 
     private void mockPerform(String content, String subLink, ResultMatcher expectedStatus) throws Exception {
         mockMvc.perform(post(LINK + subLink)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content))
-                .andExpect(expectedStatus);
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+            .andExpect(expectedStatus);
     }
 
     @Test
     void sendUserViolationEmailTest() throws Exception {
         String content = "{" +
-                "\"name\":\"String\"," +
-                "\"email\":\"String@gmail.com\"," +
-                "\"violationDescription\":\"string string\"" +
-                "}";
+            "\"name\":\"String\"," +
+            "\"email\":\"String@gmail.com\"," +
+            "\"violationDescription\":\"string string\"" +
+            "}";
 
         mockPerform(content, "/sendUserViolation", status().isOk());
 
@@ -164,16 +164,16 @@ class EmailControllerTest {
     @SneakyThrows
     void sendUserNotification() {
         String content = "{" +
-                "\"title\":\"title\"," +
-                "\"body\":\"body\"" +
-                "}";
+            "\"title\":\"title\"," +
+            "\"body\":\"body\"" +
+            "}";
         String email = "email@mail.com";
 
         mockMvc.perform(post(LINK + "/notification")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(content)
-                        .param("email", email))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content)
+            .param("email", email))
+            .andExpect(status().isOk());
 
         NotificationDto notification = new ObjectMapper().readValue(content, NotificationDto.class);
         verify(emailService).sendNotificationByEmail(notification, email);
