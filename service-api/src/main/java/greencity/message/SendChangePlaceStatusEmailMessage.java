@@ -16,7 +16,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public final class SendChangePlaceStatusEmailMessage implements Serializable {
-    @NotBlank(message = ValidationConstants.USERNAME_MESSAGE)
+    @NotBlank()
     private String authorFirstName;
     @NotBlank()
     private String placeName;
