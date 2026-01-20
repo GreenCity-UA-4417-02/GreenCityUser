@@ -35,7 +35,7 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      * Constructor.
      */
     public AccessTokenAuthenticationFilter(JwtTool jwtTool, AuthenticationManager authenticationManager,
-        UserService userService) {
+                                           UserService userService) {
         this.jwtTool = jwtTool;
         this.authenticationManager = authenticationManager;
         this.userService = userService;
@@ -68,8 +68,8 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     public void doFilterInternal(@SuppressWarnings("NullableProblems") HttpServletRequest request,
-        @SuppressWarnings("NullableProblems") HttpServletResponse response,
-        @SuppressWarnings("NullableProblems") FilterChain chain)
+                                 @SuppressWarnings("NullableProblems") HttpServletResponse response,
+                                 @SuppressWarnings("NullableProblems") FilterChain chain)
         throws IOException, ServletException {
         String token = extractToken(request);
         log.info("token {}", token);
@@ -82,6 +82,11 @@ public class AccessTokenAuthenticationFilter extends OncePerRequestFilter {
                 log.info("user {}", user);
                 if (user.isPresent()) {
                     log.debug("User successfully authenticate - {}", authentication.getPrincipal());
+                    authentication = new UsernamePasswordAuthenticationToken(
+                        authentication,
+                        null,
+                        authentication.getAuthorities()
+                    );
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (ExpiredJwtException e) {
