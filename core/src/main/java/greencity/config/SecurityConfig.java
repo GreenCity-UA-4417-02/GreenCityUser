@@ -92,16 +92,16 @@ public class SecurityConfig {
                 new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception
-                    .authenticationEntryPoint((req, resp, exc) -> {
-                        resp.setStatus(SC_UNAUTHORIZED);
-                        resp.setContentType("application/json");
-                        resp.getWriter().write("Authorize first.");
-                    })
-                    .accessDeniedHandler((req, resp, exc) -> {
-                        resp.setStatus(SC_FORBIDDEN);
-                        resp.setContentType("application/json");
-                        resp.getWriter().write("You don't have authorities.");
-                    })
+                .authenticationEntryPoint((req, resp, exc) -> {
+                    resp.setStatus(SC_UNAUTHORIZED);
+                    resp.setContentType("application/json");
+                    resp.getWriter().write("Authorize first.");
+                })
+                .accessDeniedHandler((req, resp, exc) -> {
+                    resp.setStatus(SC_FORBIDDEN);
+                    resp.setContentType("application/json");
+                    resp.getWriter().write("You don't have authorities.");
+                })
             )
             .authorizeHttpRequests(req -> req
                 .requestMatchers("/static/css/**", "/static/img/**").permitAll()
