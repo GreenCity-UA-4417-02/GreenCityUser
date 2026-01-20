@@ -157,6 +157,30 @@ class UserServiceImplTest {
     }
 
     @Test
+    void findByEmailTest_shouldReturnUserVO_whenEmailExist() {
+        String email = "test@gmail.com";
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.of(user));
+        when(modelMapper.map(user, UserVO.class)).thenReturn(userVO);
+
+        assertEquals(userVO, userService.findByEmail(email));
+        verify(userRepo).findByEmail(email);
+        verify(modelMapper).map(user, UserVO.class);
+    }
+
+    @Test
+    void findByEmailTest_shouldThrowNotFoundException_whenEmailDoesNotExist() {
+        String email = "nonExistEmail@gmail.com";
+
+        when(userRepo.findByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                ()-> userService.findByEmail(email));
+        verify(userRepo).findByEmail(email);
+        verifyNoInteractions(modelMapper);
+    }
+
+    @Test
     void saveTest() {
         when(userRepo.findByEmail(userEmail)).thenReturn(Optional.ofNullable(user));
         when(userService.findByEmail(userEmail)).thenReturn(userVO);
