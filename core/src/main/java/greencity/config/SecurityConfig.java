@@ -92,10 +92,14 @@ public class SecurityConfig {
                 new AccessTokenAuthenticationFilter(jwtTool, authenticationManager(), userService),
                 UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(exception -> exception
-                .authenticationEntryPoint((req, resp, exc) -> resp.sendError(
-                    SC_UNAUTHORIZED, "Authorize first."))
-                .accessDeniedHandler((req, resp, exc) -> resp.sendError(
-                    SC_FORBIDDEN, "You don't have authorities.")))
+                .authenticationEntryPoint((req, resp, exc) -> {
+                    resp.setStatus(SC_UNAUTHORIZED);
+                    resp.getWriter().write("{\"message\":\"Authorize first.\"}");
+                })
+                .accessDeniedHandler((req, resp, exc) -> {
+                    resp.setStatus(SC_FORBIDDEN);
+                    resp.getWriter().write("{\"message\":\"You don't have authorities.\"}");
+                }))
             .authorizeHttpRequests(req -> req
                 .requestMatchers("/static/css/**", "/static/img/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -165,7 +169,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,
                     "/ownSecurity/changePassword",
                     "/user/profile",
-                    "/user/{id}/updateUserLastActivityTime/{date}",
                     "/user/language/{languageId}",
                     "/user/employee-email")
                 .hasAnyRole(USER, ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
@@ -174,6 +177,7 @@ public class SecurityConfig {
                     "/user/authorities",
                     "/user/deactivate-employee",
                     "/user/markUserAsDeactivated",
+                    "/user/{id}/updateUserLastActivityTime/**",
                     "/user/markUserAsActivated")
                 .hasAnyRole(ADMIN, UBS_EMPLOYEE, MODERATOR, EMPLOYEE)
                 .requestMatchers(HttpMethod.GET,
