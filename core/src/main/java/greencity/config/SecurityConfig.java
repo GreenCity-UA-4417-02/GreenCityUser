@@ -51,7 +51,7 @@ public class SecurityConfig {
 
     @Autowired
     public SecurityConfig(JwtTool jwtTool, UserService userService,
-                          AuthenticationConfiguration authenticationConfiguration) {
+        AuthenticationConfiguration authenticationConfiguration) {
         this.jwtTool = jwtTool;
         this.userService = userService;
         this.authenticationConfiguration = authenticationConfiguration;
@@ -99,8 +99,7 @@ public class SecurityConfig {
                 .accessDeniedHandler((req, resp, exc) -> {
                     resp.setStatus(SC_FORBIDDEN);
                     resp.getWriter().write("You don't have authorities.");
-                })
-            )
+                }))
             .authorizeHttpRequests(req -> req
                 .requestMatchers("/static/css/**", "/static/img/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
