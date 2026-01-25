@@ -233,7 +233,9 @@ public class SecurityConfig {
      */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(new JwtAuthenticationProvider(jwtTool));
+        if (auth != null) {
+            auth.authenticationProvider(new JwtAuthenticationProvider(jwtTool));
+        }
     }
 
     /**
