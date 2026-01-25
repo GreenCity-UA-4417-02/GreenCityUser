@@ -76,8 +76,8 @@ class SecurityConfigTest {
     @WithMockUser(roles = "GUEST")
     void withWrongRole_returns403_andCustomMessage() throws Exception {
         mockMvc.perform(post("/email/sendHabitNotification")
-                        .with(csrf()))
-                .andExpect(status().isForbidden());
+            .with(csrf()))
+            .andExpect(status().isForbidden());
     }
 
     @RestController
