@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.ResponseEntity;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = SecurityConfigTest.TestController.class)
@@ -68,6 +70,14 @@ class SecurityConfigTest {
                     throw new AssertionError("Expected not 401/403 but was " + s);
                 }
             });
+    }
+
+    @Test
+    @WithMockUser(roles = "GUEST")
+    void withWrongRole_returns403_andCustomMessage() throws Exception {
+        mockMvc.perform(post("/email/sendHabitNotification")
+                        .with(csrf()))
+                .andExpect(status().isForbidden());
     }
 
     @RestController
