@@ -20,9 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -56,7 +58,7 @@ class EmailControllerTest {
                 "\"title\":\"string\"," +
                 "\"text\":\"string\"}";
 
-        mockPerform(content, "/addEcoNews");
+        mockPerform(content, "/addEcoNews", status().isOk());
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -81,7 +83,7 @@ class EmailControllerTest {
             "\"emailNotification\":\"string\"," +
             "\"subscribers\":[{\"email\":\"string\",\"id\":0,\"name\":\"string\"}]}";
 
-        mockPerform(content, "/sendReport");
+        mockPerform(content, "/sendReport", status().isOk());
 
         SendReportEmailMessage message =
             new ObjectMapper().readValue(content, SendReportEmailMessage.class);
@@ -100,7 +102,7 @@ class EmailControllerTest {
             "\"placeStatus\":\"string\"" +
             "}";
 
-        mockPerform(content, "/changePlaceStatus");
+        mockPerform(content, "/changePlaceStatus", status().isOk());
 
         SendChangePlaceStatusEmailMessage message =
             new ObjectMapper().readValue(content, SendChangePlaceStatusEmailMessage.class);
@@ -111,13 +113,13 @@ class EmailControllerTest {
     }
 
     @Test
-    void sendHabitNotification() throws Exception {
+    void sendHabitNotification_validEmail_isOk() throws Exception {
         String content = "{" +
-            "\"email\":\"string\"," +
+            "\"email\":\"test@gmail.com\"," +
             "\"name\":\"string\"" +
             "}";
 
-        mockPerform(content, "/sendHabitNotification");
+        mockPerform(content, "/sendHabitNotification", status().isOk());
 
         SendHabitNotification notification =
             new ObjectMapper().readValue(content, SendHabitNotification.class);
@@ -125,11 +127,23 @@ class EmailControllerTest {
         verify(emailService).sendHabitNotification(notification.getName(), notification.getEmail());
     }
 
-    private void mockPerform(String content, String subLink) throws Exception {
+    @Test
+    void sendHabitNotification_invalidEmail_isNotOk() throws Exception {
+        String content = "{" +
+            "\"email\":\"1111gmail.com\"," +
+            "\"name\":\"string\"" +
+            "}";
+
+        mockPerform(content, "/sendHabitNotification", status().isBadRequest());
+
+        verifyNoInteractions(emailService);
+    }
+
+    private void mockPerform(String content, String subLink, ResultMatcher expectedStatus) throws Exception {
         mockMvc.perform(post(LINK + subLink)
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
-            .andExpect(status().isOk());
+            .andExpect(expectedStatus);
     }
 
     @Test
@@ -140,7 +154,7 @@ class EmailControllerTest {
             "\"violationDescription\":\"string string\"" +
             "}";
 
-        mockPerform(content, "/sendUserViolation");
+        mockPerform(content, "/sendUserViolation", status().isOk());
 
         UserViolationMailDto userViolationMailDto = new ObjectMapper().readValue(content, UserViolationMailDto.class);
         verify(emailService).sendUserViolationEmail(userViolationMailDto);
