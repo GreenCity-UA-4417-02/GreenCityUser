@@ -14,13 +14,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public final class SendChangePlaceStatusEmailMessage implements Serializable {
-    @NotBlank()
+    @NotBlank
     private String authorFirstName;
-    @NotBlank()
+    @NotBlank
     private String placeName;
     @NotBlank
     private String placeStatus;
     @NotBlank
-    @Email()
+    @Email
     private String authorEmail;
 }
