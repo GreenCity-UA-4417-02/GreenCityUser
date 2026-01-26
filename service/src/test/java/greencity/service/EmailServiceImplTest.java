@@ -77,13 +77,13 @@ class EmailServiceImplTest {
         String placeName = "place";
         String placeStatus = "status";
         String authorEmail = "existEmail@gmail.com";
-        User ExistentUser = User.builder()
+        User existentUser = User.builder()
                 .id(1L)
                 .name("name")
                 .email("existEmail@gmail.com")
                 .build();
 
-        when(userRepo.findByEmail(authorEmail)).thenReturn(Optional.of(ExistentUser));
+        when(userRepo.findByEmail(authorEmail)).thenReturn(Optional.of(existentUser));
         service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail);
 
         verify(userRepo).findByEmail(authorEmail);
