@@ -94,9 +94,9 @@ class EmailControllerTest {
     }
 
     @Test
-    void changePlaceStatus() throws Exception {
+    void changePlaceStatus_shouldSendEmail_whenChangePlaceStatusCalled() throws Exception {
         String content = "{" +
-            "\"authorEmail\":\"string\"," +
+            "\"authorEmail\":\"string@gmail.com\"," +
             "\"authorFirstName\":\"string\"," +
             "\"placeName\":\"string\"," +
             "\"placeStatus\":\"string\"" +
@@ -110,6 +110,23 @@ class EmailControllerTest {
         verify(emailService).sendChangePlaceStatusEmail(
             message.getAuthorFirstName(), message.getPlaceName(),
             message.getPlaceStatus(), message.getAuthorEmail());
+    }
+
+    @Test
+    void changePlaceStatus_shouldNotSendEmail_whenInputInvalidEmail() throws Exception {
+        String content = "{" +
+                "\"authorEmail\":\"stringgmail.com\"," +
+                "\"authorFirstName\":\"string\"," +
+                "\"placeName\":\"string\"," +
+                "\"placeStatus\":\"string\"" +
+                "}";
+
+        mockMvc.perform(post(LINK + "/changePlaceStatus")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(emailService);
     }
 
     @Test
