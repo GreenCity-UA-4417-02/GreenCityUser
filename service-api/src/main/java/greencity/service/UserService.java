@@ -6,14 +6,18 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.shoppinglist.CustomShoppingListItemResponseDto;
 import greencity.dto.ubs.UbsTableCreationDto;
 import greencity.dto.user.*;
+import greencity.entity.User;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import java.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Provides the interface to manage {UserVO} entity.
@@ -245,7 +249,7 @@ public interface UserService {
      * @author Marian Datsko
      */
     UserVO updateUserProfilePicture(MultipartFile image, String email,
-        String base64);
+                                    String base64);
 
     /**
      * Delete user profile picture {@link UserVO}.
@@ -383,4 +387,12 @@ public interface UserService {
      * @author Ihor Volianskyi
      */
     UserVO findAdminById(Long id);
+
+    /**
+     * Method for getting usernames by their ids.
+     *
+     * @param ids {@link Set} of users' ids.
+     * @return {@link Map} where key is user id and value is username.
+     */
+    Map<Long, String> findUserNamesByUserIds(Set<Long> ids);
 }
