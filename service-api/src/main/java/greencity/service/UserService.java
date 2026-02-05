@@ -249,7 +249,7 @@ public interface UserService {
      * @author Marian Datsko
      */
     UserVO updateUserProfilePicture(MultipartFile image, String email,
-                                    String base64);
+        String base64);
 
     /**
      * Delete user profile picture {@link UserVO}.
