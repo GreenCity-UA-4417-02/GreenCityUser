@@ -66,7 +66,7 @@ class EmailServiceImplTest {
         when(userRepo.findByEmail(authorEmail)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
-                () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
+            () -> service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail));
         verify(userRepo).findByEmail(authorEmail);
         verifyNoInteractions(javaMailSender);
     }
@@ -78,10 +78,10 @@ class EmailServiceImplTest {
         String placeStatus = "status";
         String authorEmail = "existEmail@gmail.com";
         User existentUser = User.builder()
-                .id(1L)
-                .name("name")
-                .email("existEmail@gmail.com")
-                .build();
+            .id(1L)
+            .name("name")
+            .email("existEmail@gmail.com")
+            .build();
 
         when(userRepo.findByEmail(authorEmail)).thenReturn(Optional.of(existentUser));
         service.sendChangePlaceStatusEmail(authorFirstName, placeName, placeStatus, authorEmail);
