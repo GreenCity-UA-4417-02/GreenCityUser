@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
-
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -788,10 +788,11 @@ public class UserController {
      */
     @Operation(summary = "Find user names by user ids")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
     })
     @PostMapping("/ids")
-    public Map<Long, String> findUserNamesByUserIds(@RequestBody Set<Long> ids) {
+    public Map<Long, String> findUserNamesByUserIds(@RequestBody @NotEmpty Set<Long> ids) {
         return userService.findUserNamesByUserIds(ids);
     }
 }
