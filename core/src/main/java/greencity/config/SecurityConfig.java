@@ -165,6 +165,7 @@ public class SecurityConfig {
                     "/ownSecurity/set-password",
                     "/email/sendReport",
                     "/email/sendHabitNotification",
+                    "/email/notification",
                     "/email/addEcoNews",
                     "/email/changePlaceStatus",
                     "/email/general/notification")
