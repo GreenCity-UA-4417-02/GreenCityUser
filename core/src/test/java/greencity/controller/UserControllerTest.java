@@ -458,7 +458,7 @@ class UserControllerTest {
     void findIdByEmailTest() throws Exception {
         when(userService.findIdByEmail(TestConst.EMAIL)).thenReturn(1L);
         mockMvc.perform(get(userLink + "/findIdByEmail")
-                .param("email", TestConst.EMAIL))
+            .param("email", TestConst.EMAIL))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").value(1L));
     }
@@ -530,8 +530,8 @@ class UserControllerTest {
     void saveUserTest() throws Exception {
         when(userService.save(ModelUtils.getUserVO())).thenReturn(ModelUtils.getUserVO());
         mockMvc.perform(post(userLink)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(ModelUtils.getUserVO())))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(ModelUtils.getUserVO())))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.name").value(TestConst.NAME))

@@ -259,8 +259,7 @@ public class SecurityConfig {
         return new GoogleIdTokenVerifier.Builder(
             new NetHttpTransport(),
             GsonFactory.getDefaultInstance())
-            .setAudience(Collections.singletonList(props.getClientId()))
-            .build();
+                .setAudience(Collections.singletonList(props.getClientId()))
+                .build();
     }
-
 }
