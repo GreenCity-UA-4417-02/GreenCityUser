@@ -5,11 +5,10 @@ import lombok.*;
 
 @NoArgsConstructor
 @Getter
-@Setter
 @EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "friendship")
-@ToString
+@ToString(exclude = {"user1", "user2"})
 public class Friendship {
 
     @EmbeddedId
@@ -26,12 +25,18 @@ public class Friendship {
     private User user2;
 
     public Friendship(User user1, User user2) {
-        this(new FriendshipId(user1.getId(), user2.getId()), user1, user2);
-    }
+        if (user1.getId().equals(user2.getId())) {
+            throw new IllegalArgumentException("User cannot be friend with himself");
+        }
 
-    private Friendship(FriendshipId id, User user1, User user2) {
-        this.id = id;
-        this.user1 = user1;
-        this.user2 = user2;
+        this.id = new FriendshipId(user1.getId(), user2.getId());
+
+        if (user1.getId().equals(id.getUser1Id())) {
+            this.user1 = user1;
+            this.user2 = user2;
+        } else {
+            this.user1 = user2;
+            this.user2 = user1;
+        }
     }
 }
