@@ -4,33 +4,24 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
-@Setter
 @EqualsAndHashCode(of = "id")
 @Entity
-@Table(name = "friendship")
+@Table(name = "friendships")
+@ToString(exclude = {"user1", "user2"})
 public class Friendship {
 
     @EmbeddedId
     private FriendshipId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("senderId")
-    @JoinColumn(name = "sender_id", nullable = false)
-    private User sender;
+    @MapsId("user1Id")
+    @JoinColumn(name = "user1_id", nullable = false)
+    private User user1;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("receiverId")
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiver;
-
-    public Friendship(User sender, User receiver) {
-        this(new FriendshipId(sender.getId(), receiver.getId()), sender, receiver);
-    }
-
-    private Friendship(FriendshipId id, User sender, User receiver) {
-        this.id = id;
-        this.sender = sender;
-        this.receiver = receiver;
-    }
+    @MapsId("user2Id")
+    @JoinColumn(name = "user2_id", nullable = false)
+    private User user2;
 }
