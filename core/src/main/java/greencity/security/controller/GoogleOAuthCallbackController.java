@@ -1,6 +1,9 @@
 package greencity.security.controller;
 
 import greencity.config.GoogleOAuthProperties;
+import greencity.exception.exceptions.OAuthErrorCode;
+import greencity.exception.exceptions.OAuthException;
+import greencity.security.oauth.GoogleOAuthService;
 import greencity.security.oauth.GoogleOAuthStateService;
 import java.net.URI;
 import org.springframework.http.HttpHeaders;
@@ -13,12 +16,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class GoogleOAuthCallbackController {
     private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 
+    private final GoogleOAuthService googleOAuthService;
     private final GoogleOAuthProperties props;
     private final GoogleOAuthStateService stateService;
 
-    public GoogleOAuthCallbackController(GoogleOAuthProperties props, GoogleOAuthStateService stateService) {
+    public GoogleOAuthCallbackController(GoogleOAuthProperties props,
+        GoogleOAuthStateService stateService,
+        GoogleOAuthService googleOAuthService) {
         this.props = props;
         this.stateService = stateService;
+        this.googleOAuthService = googleOAuthService;
     }
 
     @GetMapping
@@ -42,17 +49,20 @@ public class GoogleOAuthCallbackController {
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<String> callback(@RequestParam(required = false) String code,
+    public ResponseEntity<?> callback(@RequestParam(required = false) String code,
         @RequestParam(required = false) String state,
         @RequestParam(required = false) String error) {
         if (error != null) {
             return ResponseEntity.badRequest().body("Google OAuth error: " + error);
         }
-
+        if (code == null) {
+            return ResponseEntity.badRequest().body("Missing code");
+        }
         if (state == null || !stateService.verifyAndConsume(state)) {
-            return ResponseEntity.badRequest().body("Invalid or expired state");
+            throw new OAuthException(OAuthErrorCode.STATE_MISMATCH, "Invalid or expired state");
         }
 
-        return ResponseEntity.ok("Google OAuth callback received.");
+        return ResponseEntity.ok(googleOAuthService.exchangeAndValidate(code));
     }
+
 }

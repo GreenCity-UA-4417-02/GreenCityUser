@@ -1,8 +1,10 @@
 package greencity.security.controller;
 
 import greencity.config.GoogleOAuthProperties;
+import greencity.security.oauth.GoogleOAuthService;
 import greencity.security.oauth.InMemoryGoogleOAuthStateService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -14,12 +16,20 @@ class GoogleOAuthRedirectTest {
     @Test
     void getAuthGoogle_shouldReturn302WithValidUrlAndState() throws Exception {
         GoogleOAuthProperties props = new GoogleOAuthProperties();
+
+        GoogleOAuthService googleOAuthService = Mockito.mock(GoogleOAuthService.class);
+
+        MockMvcBuilders.standaloneSetup(
+            new GoogleOAuthCallbackController(props, new InMemoryGoogleOAuthStateService(), googleOAuthService))
+            .build();
+
         props.setClientId("client-id-123");
         props.setClientSecret("secret");
         props.setRedirectUri("http://localhost:8080/auth/google/callback");
 
         InMemoryGoogleOAuthStateService stateService = new InMemoryGoogleOAuthStateService();
-        GoogleOAuthCallbackController controller = new GoogleOAuthCallbackController(props, stateService);
+        GoogleOAuthCallbackController controller = new GoogleOAuthCallbackController(props, stateService,
+            googleOAuthService);
 
         MockMvc mvc = MockMvcBuilders.standaloneSetup(controller).build();
 

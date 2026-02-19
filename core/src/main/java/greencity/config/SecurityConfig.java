@@ -261,6 +261,8 @@ public class SecurityConfig {
             new NetHttpTransport(),
             GsonFactory.getDefaultInstance())
                 .setAudience(Collections.singletonList(props.getClientId()))
+                .setIssuer("https://accounts.google.com")
                 .build();
     }
+
 }
