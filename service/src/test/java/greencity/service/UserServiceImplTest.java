@@ -175,7 +175,7 @@ class UserServiceImplTest {
         when(userRepo.findByEmail(email)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
-                ()-> userService.findByEmail(email));
+            () -> userService.findByEmail(email));
         verify(userRepo).findByEmail(email);
         verifyNoInteractions(modelMapper);
     }
