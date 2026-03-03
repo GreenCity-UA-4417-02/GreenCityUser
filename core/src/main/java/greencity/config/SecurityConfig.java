@@ -13,6 +13,7 @@ import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import java.util.Arrays;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,7 @@ import org.springframework.web.cors.CorsConfiguration;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalAuthentication
+@EnableConfigurationProperties(GoogleOAuthProperties.class)
 public class SecurityConfig {
     private final JwtTool jwtTool;
     private final UserService userService;
@@ -51,7 +53,7 @@ public class SecurityConfig {
 
     @Autowired
     public SecurityConfig(JwtTool jwtTool, UserService userService,
-                          AuthenticationConfiguration authenticationConfiguration) {
+        AuthenticationConfiguration authenticationConfiguration) {
         this.jwtTool = jwtTool;
         this.userService = userService;
         this.authenticationConfiguration = authenticationConfiguration;
@@ -99,8 +101,7 @@ public class SecurityConfig {
                 .accessDeniedHandler((req, resp, exc) -> {
                     resp.setStatus(SC_FORBIDDEN);
                     resp.getWriter().write("You don't have authorities.");
-                })
-            )
+                }))
             .authorizeHttpRequests(req -> req
                 .requestMatchers("/static/css/**", "/static/img/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -119,6 +120,7 @@ public class SecurityConfig {
                     "/ownSecurity/verifyEmail",
                     "/ownSecurity/updateAccessToken",
                     "/ownSecurity/restorePassword",
+                    "/auth/google/callback",
                     "/googleSecurity",
                     "/facebookSecurity/generateFacebookAuthorizeURL",
                     "/facebookSecurity/facebook",
@@ -254,8 +256,11 @@ public class SecurityConfig {
      * Bean {@link GoogleIdTokenVerifier} that uses in verify googleIdToken.
      */
     @Bean
-    public GoogleIdTokenVerifier googleIdTokenVerifier() {
-        return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
-            GsonFactory.getDefaultInstance()).build();
+    public GoogleIdTokenVerifier googleIdTokenVerifier(GoogleOAuthProperties props) {
+        return new GoogleIdTokenVerifier.Builder(
+            new NetHttpTransport(),
+            GsonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList(props.getClientId()))
+                .build();
     }
 }
