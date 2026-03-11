@@ -5,9 +5,9 @@ import greencity.annotations.CurrentUser;
 import greencity.annotations.CurrentUserId;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
-import greencity.dto.email.FindByEmailRequest;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.email.FindByEmailRequest;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.shoppinglist.CustomShoppingListItemResponseDto;
 import greencity.dto.ubs.UbsTableCreationDto;
@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,7 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/user")
@@ -776,5 +778,21 @@ public class UserController {
     @GetMapping("/findAllUsersCities")
     public ResponseEntity<List<String>> findAllUsersCities() {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAllUsersCities());
+    }
+
+    /**
+     * Method for finding usernames by user ids.
+     *
+     * @param ids {@link Set} of users' ids.
+     * @return {@link Map} where key is user id and value is username.
+     */
+    @Operation(summary = "Find user names by user ids")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
+    })
+    @PostMapping("/ids")
+    public Map<Long, String> findUserNamesByUserIds(@RequestBody @NotEmpty Set<Long> ids) {
+        return userService.findUserNamesByUserIds(ids);
     }
 }

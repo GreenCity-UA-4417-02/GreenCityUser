@@ -12,7 +12,10 @@ import greencity.dto.filter.FilterUserDto;
 import greencity.dto.shoppinglist.CustomShoppingListItemResponseDto;
 import greencity.dto.ubs.UbsTableCreationDto;
 import greencity.dto.user.*;
-import greencity.entity.*;
+import greencity.entity.Language;
+import greencity.entity.User;
+import greencity.entity.UserDeactivationReason;
+import greencity.entity.VerifyEmail;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.exception.exceptions.*;
@@ -49,7 +52,6 @@ import static greencity.enums.Role.ROLE_USER;
 import static greencity.enums.UserStatus.ACTIVATED;
 import static greencity.enums.UserStatus.DEACTIVATED;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -134,6 +136,12 @@ class UserServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
 
+    private static Stream<Arguments> provideUuidOptionalUserResultForCheckIfUserExistsByUuidTest() {
+        return Stream.of(
+            Arguments.of("444e66e8-8daa-4cb0-8269-a8d856e7dd15", Optional.of(getUser()), true),
+            Arguments.of("uuid", Optional.empty(), false));
+    }
+
     @Test
     void findAllByEmailNotification() {
         when(userRepo.findAllByEmailNotification(any(EmailNotification.class)))
@@ -175,7 +183,7 @@ class UserServiceImplTest {
         when(userRepo.findByEmail(email)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class,
-                ()-> userService.findByEmail(email));
+            () -> userService.findByEmail(email));
         verify(userRepo).findByEmail(email);
         verifyNoInteractions(modelMapper);
     }
@@ -850,9 +858,20 @@ class UserServiceImplTest {
             () -> userService.findAdminById(2L));
     }
 
-    private static Stream<Arguments> provideUuidOptionalUserResultForCheckIfUserExistsByUuidTest() {
-        return Stream.of(
-            Arguments.of("444e66e8-8daa-4cb0-8269-a8d856e7dd15", Optional.of(getUser()), true),
-            Arguments.of("uuid", Optional.empty(), false));
+    @Test
+    void findUserNamesByUserIdsTest() {
+        Set<Long> ids = Set.of(user.getId(), user2.getId());
+
+        when(userRepo.findAllById(ids)).thenReturn(List.of(user, user2));
+
+        Map<Long, String> result = userService.findUserNamesByUserIds(ids);
+
+        assertEquals(Map.of(
+            user.getId(), user.getName(),
+            user2.getId(), user2.getName()),
+            result);
+
+        verify(userRepo).findAllById(ids);
+        verifyNoMoreInteractions(userRepo);
     }
 }

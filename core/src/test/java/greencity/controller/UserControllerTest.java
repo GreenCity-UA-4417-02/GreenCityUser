@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.ModelUtils;
 import greencity.TestConst;
 import greencity.constant.AppConstant;
-import static greencity.constant.AppConstant.AUTHORIZATION;
 import greencity.converters.UserArgumentResolver;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.filter.FilterUserDto;
@@ -15,16 +14,12 @@ import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.repository.UserRepo;
 import greencity.service.UserService;
-import java.security.Principal;
-import java.util.Collections;
-import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -38,10 +33,19 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.security.Principal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static greencity.constant.AppConstant.AUTHORIZATION;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -77,9 +81,9 @@ class UserControllerTest {
             + "}";
 
         mockMvc.perform(patch(userLink + "/status")
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
             .andExpect(status().isOk());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -93,8 +97,8 @@ class UserControllerTest {
     @Test
     void updateStatusBadRequestTest() throws Exception {
         mockMvc.perform(patch(userLink + "/status")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{}"))
             .andExpect(status().isBadRequest());
     }
 
@@ -108,9 +112,9 @@ class UserControllerTest {
             + "}";
 
         mockMvc.perform(patch(userLink + "/1/role")
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
             .andExpect(status().isOk());
 
         verify(userService).updateRole(1L, Role.ROLE_USER, "testmail@gmail.com");
@@ -119,8 +123,8 @@ class UserControllerTest {
     @Test
     void updateRoleBadRequestForEmptyBodyTest() throws Exception {
         mockMvc.perform(patch(userLink + "/1/role")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(""))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(""))
             .andExpect(status().isBadRequest());
     }
 
@@ -163,8 +167,8 @@ class UserControllerTest {
             + "}";
 
         mockMvc.perform(post(userLink + "/filter?page=1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
             .andExpect(status().isOk());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -180,7 +184,7 @@ class UserControllerTest {
         when(principal.getName()).thenReturn("testmail@gmail.com");
 
         mockMvc.perform(get(userLink)
-                .principal(principal))
+            .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).getUserUpdateDtoByEmail("testmail@gmail.com");
@@ -201,9 +205,9 @@ class UserControllerTest {
             mapper.readValue(content, UserUpdateDto.class);
 
         mockMvc.perform(patch(userLink)
-                .principal(principal)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
+            .principal(principal)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
             .andExpect(status().isOk());
 
         verify(userService).update(userUpdateDto, "testmail@gmail.com");
@@ -215,7 +219,7 @@ class UserControllerTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         mockMvc.perform(get(userLink + "/{userId}/{habitId}/custom-shopping-list-items/available", 1, 1)
-                .headers(headers))
+            .headers(headers))
             .andExpect(status().isOk());
 
         verify(userService).getAvailableCustomShoppingListItems(1L, 1L);
@@ -258,11 +262,11 @@ class UserControllerTest {
         });
 
         this.mockMvc.perform(builder
-                .file(jsonFile)
-                .headers(headers)
-                .principal(principal)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
+            .file(jsonFile)
+            .headers(headers)
+            .principal(principal)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
     }
 
@@ -271,7 +275,7 @@ class UserControllerTest {
         Principal principal = mock(Principal.class);
         when(principal.getName()).thenReturn("test@email.com");
         mockMvc.perform(patch(userLink + "/deleteProfilePicture")
-                .principal(principal))
+            .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService, times(1)).deleteUserProfilePicture("test@email.com");
@@ -297,7 +301,7 @@ class UserControllerTest {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, accessToken);
         mockMvc.perform(get(userLink + "/{userId}/profileStatistics/", 1)
-                .headers(headers))
+            .headers(headers))
             .andExpect(status().isOk());
         verify(userService).getUserProfileStatistics((1L));
     }
@@ -320,11 +324,11 @@ class UserControllerTest {
         headers.set(AUTHORIZATION, accessToken);
 
         this.mockMvc.perform(put(userLink + "/profile")
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json)
-                .param("accessToken", "accessToken")
-                .principal(principal))
+            .headers(headers)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(json)
+            .param("accessToken", "accessToken")
+            .principal(principal))
             .andExpect(status().isOk());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -352,8 +356,8 @@ class UserControllerTest {
                 true, true, true, true);
         when(userService.search(pageable, userViewDto)).thenReturn(userAdvancedDto);
         mockMvc.perform(post(userLink + "/search")
-                .content(content)
-                .contentType(MediaType.APPLICATION_JSON))
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(userService).search(pageable, userViewDto);
     }
@@ -363,7 +367,7 @@ class UserControllerTest {
         UserVO userVO = ModelUtils.getUserVO();
         when(userService.findByEmail(TestConst.EMAIL)).thenReturn(userVO);
         mockMvc.perform(get(userLink + "/findByEmail")
-                .param("email", TestConst.EMAIL))
+            .param("email", TestConst.EMAIL))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.name").value(TestConst.NAME))
@@ -375,7 +379,7 @@ class UserControllerTest {
         UserVO userVO = ModelUtils.getUserVO();
         when(userService.findById(1L)).thenReturn(userVO);
         mockMvc.perform(get(userLink + "/findById")
-                .param("id", "1"))
+            .param("id", "1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id").value(1L))
@@ -400,7 +404,7 @@ class UserControllerTest {
         String query = "testQuery";
         when(userService.searchBy(pageable, query)).thenReturn(ModelUtils.getPageableAdvancedDto());
         mockMvc.perform(get(userLink + "/searchBy")
-                .param("query", query))
+            .param("query", query))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.page.length()").value(1))
             .andExpect(jsonPath("$.totalElements").value(1L))
@@ -412,16 +416,16 @@ class UserControllerTest {
         UserManagementUpdateDto userManagementDto = ModelUtils.getUserManagementUpdateDto();
         String content = objectMapper.writeValueAsString(userManagementDto);
         mockMvc.perform(put(userLink + "/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(content))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
             .andExpect(status().isOk());
     }
 
     @Test
     void updateUserManagementBadRequestTest() throws Exception {
         mockMvc.perform(put(userLink + "/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(""))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(""))
             .andExpect(status().isBadRequest());
         verify(userService, times(0)).updateUser(1L, ModelUtils.getUserManagementUpdateDto());
     }
@@ -447,8 +451,8 @@ class UserControllerTest {
             .uuid("testUuid")
             .build());
         mockMvc.perform(get(userLink + "/createUbsRecord")
-                .principal(principal)
-                .content(objectMapper.writeValueAsString(ModelUtils.getUserVO())))
+            .principal(principal)
+            .content(objectMapper.writeValueAsString(ModelUtils.getUserVO())))
             .andExpect(status().isOk())
             .andDo(MockMvcResultHandlers.print())
             .andExpect(jsonPath("$.uuid").value("testUuid"));
@@ -458,7 +462,7 @@ class UserControllerTest {
     void findIdByEmailTest() throws Exception {
         when(userService.findIdByEmail(TestConst.EMAIL)).thenReturn(1L);
         mockMvc.perform(get(userLink + "/findIdByEmail")
-                .param("email", TestConst.EMAIL))
+            .param("email", TestConst.EMAIL))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").value(1L));
     }
@@ -480,7 +484,7 @@ class UserControllerTest {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         mockMvc.perform(put(userLink + "/language/{languageId}", 1)
-                .principal(principal))
+            .principal(principal))
             .andExpect(status().isOk());
 
         verify(userService).updateUserLanguage(userId, 1L);
@@ -500,7 +504,7 @@ class UserControllerTest {
         when(userService.findByEmail(principal.getName())).thenReturn(userVO);
 
         this.mockMvc.perform(get(userLink + "/lang" + "?id=1")
-                .principal(principal))
+            .principal(principal))
             .andExpect(content().string(languageCode))
             .andExpect(status().isOk());
     }
@@ -510,7 +514,7 @@ class UserControllerTest {
         List<String> test = List.of("test", "test");
         when(userService.getDeactivationReason(1L, "en")).thenReturn(test);
         this.mockMvc.perform(get(userLink + "/reasons" + "?id=1" + "&admin=en")
-                .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
         verify(userService).getDeactivationReason(1L, "en");
     }
@@ -520,8 +524,8 @@ class UserControllerTest {
         List<Long> ids = List.of(1L, 2L, 3L, 4L);
         when(userService.deactivateAllUsers(ids)).thenReturn(ids);
         mockMvc.perform(put(userLink + "/deactivateAll")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(ids)))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(ids)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(4));
     }
@@ -530,8 +534,8 @@ class UserControllerTest {
     void saveUserTest() throws Exception {
         when(userService.save(ModelUtils.getUserVO())).thenReturn(ModelUtils.getUserVO());
         mockMvc.perform(post(userLink)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(ModelUtils.getUserVO())))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(ModelUtils.getUserVO())))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(1L))
             .andExpect(jsonPath("$.name").value(TestConst.NAME))
@@ -544,7 +548,7 @@ class UserControllerTest {
         when(userService.findAllByEmailNotification(notification))
             .thenReturn(List.of(ModelUtils.getUserVO()));
         mockMvc.perform(get(userLink + "/findAllByEmailNotification")
-                .param("emailNotification", notification.toString()))
+            .param("emailNotification", notification.toString()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(1))
             .andExpect(jsonPath("$[0].id").value(1L));
@@ -567,5 +571,24 @@ class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(3))
             .andExpect(jsonPath("$", Matchers.containsInAnyOrder("Lviv", "Kyiv", "Kharkiv")));
+    }
+
+    @Test
+    void findUserNamesByUserIdsTest() throws Exception {
+        Set<Long> ids = Set.of(1L, 2L);
+        Map<Long, String> responce = Map.of(
+            1L, "test1",
+            2L, "test2");
+
+        when(userService.findUserNamesByUserIds(ids)).thenReturn(responce);
+
+        mockMvc.perform(post(userLink + "/ids")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                [1, 2]
+                """))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.['1']").value("test1"))
+            .andExpect(jsonPath("$.['2']").value("test2"));
     }
 }

@@ -1,24 +1,24 @@
 package greencity.service;
 
-import greencity.constant.UpdateConstants;
-import greencity.dto.ubs.UbsTableCreationDto;
-import greencity.dto.user.*;
-import greencity.entity.Language;
-import greencity.entity.UserDeactivationReason;
-import greencity.filters.SearchCriteria;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.constant.UpdateConstants;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.FilterUserDto;
 import greencity.dto.shoppinglist.CustomShoppingListItemResponseDto;
+import greencity.dto.ubs.UbsTableCreationDto;
+import greencity.dto.user.*;
+import greencity.entity.Language;
 import greencity.entity.User;
+import greencity.entity.UserDeactivationReason;
 import greencity.entity.VerifyEmail;
 import greencity.enums.EmailNotification;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import greencity.exception.exceptions.*;
+import greencity.filters.SearchCriteria;
 import greencity.filters.UserSpecification;
 import greencity.repository.LanguageRepo;
 import greencity.repository.UserDeactivationRepo;
@@ -162,7 +162,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findByEmail(String email) {
         Optional<User> optionalUser = userRepo.findByEmail(email);
-        if(optionalUser.isEmpty()) {
+        if (optionalUser.isEmpty()) {
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + email);
         }
         return modelMapper.map(optionalUser.get(), UserVO.class);
@@ -762,5 +762,15 @@ public class UserServiceImpl implements UserService {
         }
 
         throw new LowRoleLevelException("You do not have authorities");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<Long, String> findUserNamesByUserIds(Set<Long> ids) {
+        return userRepo.findAllById(ids)
+            .stream()
+            .collect(Collectors.toMap(User::getId, User::getName));
     }
 }
