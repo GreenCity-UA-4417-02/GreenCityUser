@@ -167,8 +167,18 @@ class EmailServiceImplTest {
     }
 
     @Test
-    void sendHabitNotification() {
-        service.sendHabitNotification("userName", "userEmail");
+    void sendHabitNotification_userNotFound_isNotOk() {
+        when(userRepo.findByEmail("usertest@gmail.com")).thenReturn(Optional.empty());
+        assertThrows(NotFoundException.class,
+            () -> service.sendHabitNotification("userName", "usertest@gmail.com"));
+        verify(javaMailSender, never()).createMimeMessage();
+    }
+
+    @Test
+    void sendHabitNotification_userExists_isOk() {
+        when(userRepo.findByEmail("usertest@gmail.com")).thenReturn(Optional.of(new User()));
+
+        service.sendHabitNotification("userName", "usertest@gmail.com");
         verify(javaMailSender).createMimeMessage();
     }
 
